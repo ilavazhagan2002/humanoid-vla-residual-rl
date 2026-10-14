@@ -4,7 +4,7 @@ Language-conditioned loco-manipulation on the **Unitree G1** humanoid, fully in 
 A **SmolVLA** vision-language-action model decides *what* to do from camera images and a text instruction,
 a **residual RL** policy refines *how* it is done, and a **PPO locomotion policy** keeps the robot balanced.
 
-> 🚧 **Work in progress.** Currently in Phase 0 (environment setup).
+> 🚧 **Work in progress.** Currently in Phase 1 (G1 model in MuJoCo).
 > Every step, decision and problem is documented in [`docs/`](docs/).
 
 ## Architecture
@@ -24,7 +24,7 @@ MuJoCo / MuJoCo Warp (via [mjlab](https://github.com/mujocolab/mjlab)) ·
 
 ## Roadmap
 
-- [ ] Phase 0: Environment setup
+- [x] Phase 0: Environment setup
 - [ ] Phase 1: G1 model in MuJoCo
 - [ ] Phase 2: RL locomotion policy (PPO)
 - [ ] Phase 3: Task scene + scripted expert demonstrations

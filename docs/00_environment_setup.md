@@ -146,3 +146,30 @@ uv run --extra cu130 demo                           # viewer at http://localhost
 - **Problem:** the first `uv sync` failed with `network unreachable` / DNS errors on an unstable connection.
   Retried with `UV_CONCURRENT_DOWNLOADS=4` to reduce parallel downloads.
 - First run JIT-compiles the MuJoCo Warp kernels for `sm_120` (~25 s), cached in `~/.cache/warp`.
+
+## 9. LeRobot + SmolVLA
+
+```bash
+git clone --depth 1 https://github.com/huggingface/lerobot.git   # commit 53feaef (2026-10-14)
+cd lerobot
+uv venv --python 3.12 .venv      # uses /usr/bin/python3.12, the same interpreter as ROS 2 Jazzy
+source .venv/bin/activate
+uv pip install -e ".[smolvla]"
+```
+
+- LeRobot pins `torch<2.12` and routes torch/torchvision to the **cu128** index on Linux.
+  Verified: `torch 2.11.0+cu128`, arch list includes `sm_120`.
+- Python 3.12 is set explicitly: `requires-python = ">=3.12"` has no upper bound,
+  and ROS 2 Jazzy's `rclpy` requires Python 3.12.
+- `lerobot/smolvla_base`: 450 M parameters (bfloat16), of which 100 M are trainable
+  (action expert); the vision-language model is frozen.
+  `chunk_size = n_action_steps = 50`: 50 actions are predicted and executed open-loop
+  before the next prediction. This motivates the 50 Hz RL locomotion layer and the
+  per-step residual RL correction.
+
+## Environments summary
+
+| Environment | Python | torch | CUDA build | Purpose |
+|---|---|---|---|---|
+| `mjlab/.venv` | 3.13 (uv-managed) | 2.14.0 | cu130 | RL training (locomotion, residual) |
+| `lerobot/.venv` | 3.12 (system) | 2.11.0 | cu128 | SmolVLA dataset, fine-tuning, inference |
