@@ -129,3 +129,20 @@ ROS is now sourced manually only in ROS terminals.
 ## Next
 
 - Install mjlab (RL locomotion) and LeRobot + SmolVLA, and verify GPU access from PyTorch.
+
+## 8. mjlab (RL framework)
+
+```bash
+git clone https://github.com/mujocolab/mjlab.git   # commit 45b1e263e (2026-10-12)
+cd mjlab
+uv sync --extra cu130
+uv run --extra cu130 demo                           # viewer at http://localhost:8080
+```
+
+- **`--extra cu130`** selects the PyTorch build for CUDA 13.0, which contains `sm_120` kernels for Blackwell.
+  The `cu126` extra predates Blackwell. Verified: `torch 2.14.0+cu130`, arch list includes `sm_120`.
+- uv chose **Python 3.13** for this environment. Fine, because mjlab never imports ROS;
+  trained policies leave it as exported files. The Python 3.12 rule applies to the LeRobot environment.
+- **Problem:** the first `uv sync` failed with `network unreachable` / DNS errors on an unstable connection.
+  Retried with `UV_CONCURRENT_DOWNLOADS=4` to reduce parallel downloads.
+- First run JIT-compiles the MuJoCo Warp kernels for `sm_120` (~25 s), cached in `~/.cache/warp`.
